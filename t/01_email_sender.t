@@ -2,15 +2,26 @@ use strict;
 use utf8;
 use warnings;
 
-use Email::MIME;
-use Email::Sender::Simple qw(sendemail);
-use Test::More tests => 2;
+use Encode qw(is_utf8);
+use Test::More tests => 6;
+
+BEGIN {
+    use_ok('Email::MIME');
+    use_ok('Email::Sender::Simple', qw(sendmail));
+};
 
 our $utf8_subject = '〜〜テスト〜〜';
 our $utf8_body = <<BODY;
 〜〜テスト〜〜
 〜〜テスト〜〜
 BODY
+
+{
+    diag('Encoding test');
+
+    ok(is_utf8($utf8_subject), '$utf8_subject is utf8');
+    ok(is_utf8($utf8_body), '$utf8_body is utf8');
+};
 
 {
     diag('Sending UTF-8 email test');
@@ -31,8 +42,8 @@ BODY
 
     isa_ok($mail, 'Email::MIME');
 
-    sendemail($mail);
-    pass('sendemail ok');
+    sendmail($mail);
+    pass('sendmail ok');
 };
 
 1;
